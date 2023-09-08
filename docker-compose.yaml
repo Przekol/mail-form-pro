@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  postgres:
+    container_name: mail-form-pro-db
+    image: postgres:latest
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - /data/postgres:/data/postgres
+    env_file:
+      - .env
+    networks:
+      - mail-form-pro
+
+  pgadmin:
+    links:
+      - postgres:postgres
+    container_name: mail-form-pro-pgadmin
+    image: dpage/pgadmin4:latest
+    ports:
+      - "${PGADMIN_PORT}:80"
+    volumes:
+      - /data/pgadmin:/root/.pgadmin
+    env_file:
+      - .env
+    networks:
+      - mail-form-pro
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"
+      - "${MAIL_PORT}:1025"
+    networks:
+      - mail-form-pro
+
+networks:
+  mail-form-pro:
+    driver: bridge
