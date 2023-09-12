@@ -58,6 +58,46 @@
           "codeCoverage": true
         }
       }
+    },
+    "typeorm-build-migration-config": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/typeorm-migration",
+        "main": "apps/backend/src/app/database/typeorm.config.ts",
+        "tsConfig": "apps/backend/tsconfig.app.json",
+        "isolatedConfig": true,
+        "webpackConfig": "apps/backend/webpack.config.js"
+      }
+    },
+    "typeorm-generate-migration": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "cwd": "apps/backend",
+        "command": "typeorm -d ../../dist/apps/typeorm-migration/main.js migration:generate ./src/app/database/migrations/{args.name}"
+      },
+      "dependsOn": ["typeorm-build-migration-config"]
+    },
+    "typeorm-run-migration": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "cwd": "apps/backend",
+        "commands": ["typeorm -d ../../dist/apps/typeorm-migration/main.js migration:run"]
+      },
+      "dependsOn": ["typeorm-build-migration-config"]
+    },
+    "typeorm-revert-migration": {
+      "executor": "nx:run-commands",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "cwd": "apps/backend",
+        "commands": ["typeorm -d ../../dist/apps/typeorm-migration/main.js  migration:revert"]
+      },
+      "dependsOn": ["typeorm-build-migration-config"]
     }
   },
   "tags": []
